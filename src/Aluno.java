@@ -9,49 +9,52 @@ public class Aluno {
     private String senha;
     private String email;
     private String telefone;
+    private int idade;
 
-    public Aluno(int matricula, String cpf, String nome, String senha, String email, String telefone) {
-        setMatricula(matricula);
+    public Aluno(int matricula, String nome, String cpf, String email, int idade, String senha, String telefone) {
+        this.matricula = matricula;
+        this.cpf = cpf;
+        this.nome = nome;
+        this.senha = senha;
+        this.email = email;
+        this.telefone = telefone;
+        this.idade = idade;
+    }
+
+    public Aluno(String cpf, String nome, String senha, String email, String telefone, int idade) {
         setCpf(cpf);
         setNome(nome);
         setSenha(senha);
         setEmail(email);
         setTelefone(telefone);
+        setIdade(idade);
     }
 
     /**
-     * Método criarConta: Responsável por criar uma nova conta de Usuário no banco
+     * Método cadastrar: Responsável por criar uma nova conta de Usuário no banco
      * de dados sistema.
      * Obs.: Recebe uma instancia da Classe Usuario com dados já formatriculaados
      * corretamente,a falta
      * dessa formatriculaação pode causar erros.
      */
-    public void criarConta() {
+    public void cadastrar() {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state;
         if (buscaUsuario(getCpf()) == null) {
             try {
 
                 // Insere o usuário na tabela Usuario
-                String query = "INSERT Into usuario (cpf, nome, senha, email) VALUES (?, ?, ?, ?)";
+                String query = "INSERT Into usuario (nome, cpf, email, idade, senha, telefone, bibliotecario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 state = connection.prepareStatement(query);
-                state.setString(1, cpf);
-                state.setString(2, nome);
-                state.setString(3, senha);
-                state.setString(4, email);
+                state.setString(1, nome);
+                state.setString(2, cpf);
+                state.setString(3, email);
+                state.setInt(4, idade);
+                state.setString(5, senha);
+                state.setString(6, telefone);
+                state.setBoolean(7, false);
                 state.executeUpdate();
 
-                // Insere os telefones dele na tabela Telefone com base em seu cpf
-                // for (int i = 0; i < telefone.size(); i++) {
-                //     if (telefone.get(i) != null) {
-                //         query = "INSERT Into telefone (cpf, numero) VALUES (?, ?)";
-                //         PreparedStatement state2 = connection.prepareStatement(query);
-                //         state2.setString(1, cpf);
-                //         state2.setString(2, telefone.get(i));
-                //         state2.executeUpdate();
-                //         state2.close(); // Sempre importante fechar o PreparedStatement depois de usa-lo.
-                //     }
-                // }
                 System.out.println(" Usuário Cadastrado!");
 
             } catch (Exception e) {
@@ -71,24 +74,19 @@ public class Aluno {
      * 
      * @param cpf
      */
-    public static void excluirConta(String cpf) {
+    public static void excluirUsuario(String cpf) {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state;
 
         try {
 
-            // Remove os telefones endereçados ao usuário removido
-            String query = "DELETE From telefone where cpf = ?";
-            state = connection.prepareStatement(query);
-            state.setString(1, cpf);
-            state.executeUpdate();
-
             // Remove o usuário da tabela Usuario
-            query = "DELETE From usuario where cpf = ?";
+            String query = "DELETE From usuario where cpf = ?";
             state = connection.prepareStatement(query);
             state.setString(1, cpf);
             state.executeUpdate();
             state.close();
+
             System.out.println(" Usuário Excluido!");
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,7 +107,7 @@ public class Aluno {
     public static Aluno buscaUsuario(String cpf) {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
-        ResultSet result = null, result2 = null;
+        ResultSet result = null;
 
         try {
 
@@ -118,20 +116,6 @@ public class Aluno {
             state = connection.prepareStatement(query);
             state.setString(1, cpf);
             result = state.executeQuery();
-
-            // Usando o mesmo cpf, ele busca os telefones, deixando-os organizados em ordem
-            // crescente por id.
-            ArrayList<String> telefone = new ArrayList<String>();
-            // O método buscaTelefone retorma uma tupla com idTelefone (na coluna 1) e
-            // numero (na coluna 2).
-            result2 = buscaTelefone(cpf);
-
-            if (result2 != null) {
-                while (result2.next()) {
-                    // Aqui estou retornando os numeros, contidos na coluna 2 da tupla.
-                    telefone.add(result2.getString(2));
-                }
-            }
 
             // Retorna o usuário
             if (result.next()) {
@@ -192,7 +176,7 @@ public class Aluno {
      * @param email
      * @param telefone
      */
-    public void editarUsuario(String nome, String senha, String email) {
+    public void editarUsuario(String nome, String senha, String email, int idade, String telefone, boolean bibliotecario) {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
 
@@ -201,94 +185,23 @@ public class Aluno {
         setNome(nome != null ? nome : getNome());
         setSenha(senha != null ? senha : getSenha());
         setEmail(email != null ? email : getEmail());
+        setIdade(idade != -1 ? idade : getIdade());
+        setTelefone(telefone != null ? telefone : getTelefone());
 
         try {
 
             // Atualiza nome, senha e email na tabela usuario na posição do cpf usado.
-            String query = "UPDATE Usuario SET nome = ?, senha = ?, email = ? WHERE cpf = ?";
+            String query = "UPDATE Usuario SET nome = ?, senha = ?, email = ?, idade = ?, telefone = ?, bibliotecario = ? WHERE cpf = ?";
             state = connection.prepareStatement(query);
             state.setString(1, this.nome);
             state.setString(2, this.senha);
             state.setString(3, this.email);
-            state.setString(4, this.cpf);
+            state.setInt(4, this.idade);
+            state.setString(5, this.telefone);
+            state.setBoolean(6, bibliotecario);
+            state.setString(7, this.cpf);
             state.executeUpdate();
             state.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * buscaTelefone é um método auxiliar. Busca um telefone no banco com base no
-     * seu cpf, e retorna um
-     * ResultSet contendo o idTelefone e numero em seu primeiro e segundo slot.
-     * 
-     * @param cpf
-     * @return ResultSet
-     */
-    public static ResultSet buscaTelefone(String cpf) {
-        Connection connection = PostgreSQLConnection.getInstance().getConnection();
-        PreparedStatement state = null;
-        ResultSet result = null;
-
-        try {
-
-            // Seleciona idTelefone e numero, ordenados por ordem crescente de id, da tabela
-            // telefone.
-            String query = "SELECT idTelefone, numero FROM telefone WHERE cpf = ? ORDER BY idTelefone";
-            state = connection.prepareStatement(query);
-            state.setString(1, cpf);
-
-            /*
-             * O ResultSet é semelhante a um ArrayList, e o acesso aos dados dele ocorre de
-             * maneira
-             * semelhante a um iterrator.
-             */
-            result = state.executeQuery();
-            return (result);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * Método editaTelefone: Responsável por editar o telefone na tabela de uma
-     * instâcia da classe Usuario.
-     * Obs.: Recebe dados já formatriculaados.
-     * 
-     * @param telefone
-     */
-    public void editaTelefone(ArrayList<String> telefone) {
-        Connection connection = PostgreSQLConnection.getInstance().getConnection();
-        ResultSet result = null;
-
-        // Esse ArrayList serve pra receber os ids ta tabela telefone, referentes ao cpf
-        // do usuario.
-        ArrayList<Integer> tele = new ArrayList<Integer>();
-
-        // Se estiver vazio, para evitar erros aplico o próprio telefone.
-
-        try {
-
-            // Essa busca vai me retornar um ResultSet com idTelefone e numero.
-            result = buscaTelefone(this.cpf);
-            while (result.next()) {
-                // Repare que estou acessando a coluna 1, que contém os ids.
-                tele.add(result.getInt(1));
-            }
-
-            // Com base nos ids, faço a atualização do telefone
-            for (int i = 0; i < tele.size(); i++) {
-                String query = "UPDATE Telefone SET numero = ? WHERE idTelefone = ?";
-                PreparedStatement state = connection.prepareStatement(query);
-                state.setString(1, telefone.get(i));
-                state.setInt(2, tele.get(i));
-                state.executeUpdate();
-                state.close();
-            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -304,7 +217,7 @@ public class Aluno {
     public static ArrayList<Aluno> listaUsuario() {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
-        ResultSet result, result2;
+        ResultSet result;
 
         // ArrayList do tipo Usuario, que será retornado com todos os usuarios do banco.
         ArrayList<Aluno> usuarios = new ArrayList<Aluno>();
@@ -318,21 +231,16 @@ public class Aluno {
 
             while (result.next()) {
 
-                // Seleciona os telefones desses usuarios.
-                result2 = buscaTelefone(result.getString(1));
-                ArrayList<String> telefone = new ArrayList<String>();
-                while (result2.next()) {
-                    telefone.add(result2.getString(2));
-                }
-
                 // Cria um objeto para cada um e coloca no ArrayList.
-                // Aluno user = new Aluno(
-                // result.getString(1),
-                // result.getString(2),
-                // result.getString(3),
-                // result.getString(4),
-                // telefone);
-                // usuarios.add(user);
+                Aluno user = new Aluno(
+                result.getInt(1),
+                result.getString(2),
+                result.getString(3),
+                result.getString(4),
+                result.getInt(5),
+                result.getString(6),
+                result.getString(7));
+                usuarios.add(user);
             }
 
             state.close();
@@ -343,6 +251,8 @@ public class Aluno {
         }
         return null;
     }
+
+    
 
     public int getMatricula() {
         return matricula;
@@ -392,10 +302,18 @@ public class Aluno {
         this.telefone = telefone;
     }
 
+    public int getIdade() {
+        return idade;
+    }
+
+    public void setIdade(int idade) {
+        this.idade = idade;
+    }
+
     @Override
     public String toString() {
         return "Aluno [matricula=" + matricula + ", cpf=" + cpf + ", nome=" + nome + ", senha=" + senha + ", email="
-                + email + ", telefone=" + telefone + "]";
+                + email + ", telefone=" + telefone + ", idade=" + idade + "]";
     }
 
 }
