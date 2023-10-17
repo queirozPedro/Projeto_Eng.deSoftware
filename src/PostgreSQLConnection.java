@@ -6,7 +6,11 @@ public class PostgreSQLConnection {
     private static PostgreSQLConnection instance; // Instancia de Banco de Dados
     private Connection connection; // Conectar o Banco 
 
-    private final String url = "jdbc:postgresql://tuffi.db.elephantsql.com"; // Url do Banco
+    private final String url = "jdbc:postgresql://tuffi.db.elephantsql.com:5432/qaokqcmt"; // Url do Banco
+
+    // URL correta, "jdbc:postgresql://tuffi.db.elephantsql.com:5432/qaokqcmt"
+    // URL anterior "jdbc:postgresql://tuffi.db.elephantsql.com"
+    
     private final String username = "qaokqcmt"; // Username do Banco
     private final String password = "Xx4rLbto45xgsyRfNXTCs9S3BA4Hn6RG"; // Senha do Banco
 
