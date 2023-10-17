@@ -252,7 +252,48 @@ public class Aluno {
         return null;
     }
 
-    
+    public boolean solicitarEmprestimo(int livro, Date data){
+        Connection connection = PostgreSQLConnection.getInstance().getConnection();
+        PreparedStatement state = null;
+
+        try {
+
+            // O atributo status ficaria com algo em que diria que o empréstimo está pendente
+            String query = "INSERT Into usuario (id_usuario, id_livro, datainicial, status) VALUES (?, ?, ?, ?)";
+            state = connection.prepareStatement(query);
+            state.setInt(1, this.matricula);
+            state.setInt(2, livro);
+            state.setDate(3, data);
+            state.setString(4, "");
+            state.executeUpdate();
+
+            return true;
+            
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean renovarEmprestimo(int livro){
+        Connection connection = PostgreSQLConnection.getInstance().getConnection();
+        PreparedStatement state = null;
+
+        try {
+
+            // O atributo status ficaria com algo em que diria que o empréstimo está com a renovação pendente
+            String query = "UPDATE emprestimo SET status = ? WHERE id_cliente = ? AND  id_livro = ?";
+            state = connection.prepareStatement(query);
+            state.setString(1, "");
+            state.setInt(2, this.matricula);
+            state.setInt(3, livro);
+            state.executeUpdate();
+
+            return true;
+            
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     public int getMatricula() {
         return matricula;
