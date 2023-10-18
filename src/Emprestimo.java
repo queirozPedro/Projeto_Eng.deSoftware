@@ -72,7 +72,6 @@ public class Emprestimo {
         // Lógica para calcular e aplicar a penalização com base nos dias de atraso.
         if (diasDeAtraso > 0) {
             // Aplicar penalização, como multa, de acordo com as regras da biblioteca.
-            // Você pode adicionar lógica específica aqui.
         }
     }
 }
