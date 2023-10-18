@@ -74,4 +74,13 @@ public class Emprestimo {
             // Aplicar penalização, como multa, de acordo com as regras da biblioteca.
         }
     }
+
+    @Override
+    public String toString() {
+        return "Emprestimo [id=" + id + ", aluno=" + aluno + ", idLivro=" + idLivro + ", dataInicial=" + dataInicial
+                + ", dataFinal=" + dataFinal + "]";
+    }
+
+    
+    
 }

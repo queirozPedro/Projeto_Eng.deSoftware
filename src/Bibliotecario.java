@@ -8,16 +8,12 @@ public class Bibliotecario extends Aluno {
         super(matricula, nome, cpf, email, idade, senha, telefone);
     }
 
-    public Bibliotecario(String cpf, String nome, String senha, String email, String telefone, int idade) {
-        super(cpf, nome, senha, email, telefone, idade);
-    }
-
     public void inserirAluno(Aluno aluno) {
-        aluno.cadastrar();
+        aluno.cadastrarAluno();
     }
 
     public void buscarAluno(int idAluno) {
-        Aluno aluno = buscaUsuarioPorMatricula(idAluno);
+        Aluno aluno = buscaAlunoPorMatricula(idAluno);
         if (aluno != null) {
             System.out.println(aluno.toString());
         } else {
@@ -25,21 +21,22 @@ public class Bibliotecario extends Aluno {
         }
     }
 
-    public void editarAluno(int idAluno, Aluno aluno) {
-        Aluno alunoExistente = buscaUsuarioPorMatricula(idAluno);
-        if (alunoExistente != null) {
-            alunoExistente.editarUsuario(aluno.getNome(), aluno.getSenha(), aluno.getEmail(), aluno.getIdade(),
-                    aluno.getTelefone(), false);
-            System.out.println("Aluno editado com sucesso!");
-        } else {
-            System.out.println("Aluno não encontrado");
-        }
-    }
+    // Deixei comentado, pq tava dando conflito com Aluno
+    // public void editarAluno(int idAluno, Aluno aluno) {
+    //     Aluno alunoExistente = buscaAlunoPorMatricula(idAluno);
+    //     if (alunoExistente != null) {
+    //         alunoExistente.editarAluno(aluno.getNome(), aluno.getSenha(), aluno.getEmail(), aluno.getIdade(),
+    //                 aluno.getTelefone(), false);
+    //         System.out.println("Aluno editado com sucesso!");
+    //     } else {
+    //         System.out.println("Aluno não encontrado");
+    //     }
+    // }
 
     public void removerAluno(int idAluno) {
-        Aluno alunoExistente = buscaUsuarioPorMatricula(idAluno);
+        Aluno alunoExistente = buscaAlunoPorMatricula(idAluno);
         if (alunoExistente != null) {
-            excluirUsuario(alunoExistente.getCpf());
+            excluirAluno(alunoExistente.getCpf());
             System.out.println("Aluno removido com sucesso!");
         } else {
             System.out.println("Aluno não encontrado");
@@ -108,11 +105,11 @@ public class Bibliotecario extends Aluno {
         return "Bibliotecario []";
     }
 
-    private Aluno buscaUsuarioPorMatricula(int matricula) {
+    private Aluno buscaAlunoPorMatricula(int matricula) {
         PreparedStatement state = null;
         ResultSet result = null;
         try {
-            String query = "SELECT * From Usuario where matricula = ?";
+            String query = "SELECT * From Aluno where matricula = ?";
             state = PostgreSQLConnection.getInstance().getConnection().prepareStatement(query);
             state.setInt(1, matricula);
             result = state.executeQuery();

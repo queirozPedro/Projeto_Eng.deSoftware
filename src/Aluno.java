@@ -21,30 +21,22 @@ public class Aluno {
         this.idade = idade;
     }
 
-    public Aluno(String cpf, String nome, String senha, String email, String telefone, int idade) {
-        setCpf(cpf);
-        setNome(nome);
-        setSenha(senha);
-        setEmail(email);
-        setTelefone(telefone);
-        setIdade(idade);
-    }
-
     /**
-     * Método cadastrar: Responsável por criar uma nova conta de Usuário no banco
+     * Método cadastrar: Responsável por criar uma nova conta de Aluno no banco
      * de dados sistema.
-     * Obs.: Recebe uma instancia da Classe Usuario com dados já formatriculaados
+     * Obs.: Recebe uma instancia da Classe Aluno com dados já formatriculaados
      * corretamente,a falta
      * dessa formatriculaação pode causar erros.
      */
-    public void cadastrar() {
+    public void cadastrarAluno() {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
-        PreparedStatement state;
-        if (buscaUsuario(getCpf()) == null) {
+        PreparedStatement state = null;
+        
+        if (buscaAluno(getCpf()) == null) {
             try {
 
-                // Insere o usuário na tabela Usuario
-                String query = "INSERT Into usuario (nome, cpf, email, idade, senha, telefone, bibliotecario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                // Insere o Aluno na tabela Aluno
+                String query = "INSERT Into Aluno (nome, cpf, email, idade, senha, telefone, bibliotecario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 state = connection.prepareStatement(query);
                 state.setString(1, nome);
                 state.setString(2, cpf);
@@ -55,11 +47,20 @@ public class Aluno {
                 state.setBoolean(7, false);
                 state.executeUpdate();
 
-                System.out.println(" Usuário Cadastrado!");
+                System.out.println(" Aluno Cadastrado!");
 
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    if (state != null) {
+                        state.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
+
         } else {
             System.out.println(" ERRO! Cpf já Cadastrado!");
         }
@@ -74,27 +75,35 @@ public class Aluno {
      * 
      * @param cpf
      */
-    public static void excluirUsuario(String cpf) {
+    public static void excluirAluno(String cpf) {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
-        PreparedStatement state;
+        PreparedStatement state = null;
 
         try {
 
-            // Remove o usuário da tabela Usuario
-            String query = "DELETE From usuario where cpf = ?";
+            // Remove o Aluno da tabela Aluno
+            String query = "DELETE From Aluno where cpf = ?";
             state = connection.prepareStatement(query);
             state.setString(1, cpf);
             state.executeUpdate();
             state.close();
 
-            System.out.println(" Usuário Excluido!");
+            System.out.println(" Aluno Excluido!");
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (state != null) {
+                    state.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     /**
-     * Método buscaUsuario: Responsável por retornar um Usuário do banco de dados de
+     * Método buscaAluno: Responsável por retornar um Aluno do banco de dados de
      * acordo com seu cpf.
      * Obs.: O Método não trata dados, portanto o cpf deve ser recebido no
      * formatriculao
@@ -102,22 +111,22 @@ public class Aluno {
      * null caso não encontre.
      * 
      * @param cpf
-     * @return Usuario
+     * @return Aluno
      */
-    public static Aluno buscaUsuario(String cpf) {
+    public static Aluno buscaAluno(String cpf) {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
         ResultSet result = null;
 
         try {
 
-            // Seleciona tudo (*) na tabela Usuario onde o cpf foi o igual ao recebido
-            String query = "SELECT * From usuario where cpf = ?";
+            // Seleciona tudo (*) na tabela Aluno onde o cpf foi o igual ao recebido
+            String query = "SELECT * From Aluno where cpf = ?";
             state = connection.prepareStatement(query);
             state.setString(1, cpf);
             result = state.executeQuery();
 
-            // Retorna o usuário
+            // Retorna o Aluno
             if (result.next()) {
                 return null;
             }
@@ -125,107 +134,161 @@ public class Aluno {
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if(result != null){
+                    result.close();
+                }
+                if (state != null) {
+                    state.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }
 
     /**
-     * Método loginUsuario: Método que recebe um email e uma senha e retorna o
-     * usuário que seja correspondente aos dois. Ele será usado juntamente com o
-     * buscaUsuario
+     * Método loginAluno: Método que recebe um email e uma senha e retorna o
+     * Aluno que seja correspondente aos dois. Ele será usado juntamente com o
+     * buscaAluno
      * para efetuar o login. Obs.: O Método não trata dados, portanto o email e
      * senha devem
      * ser recebidos no formatriculao correto.
      * 
      * @param email
      * @param senha
-     * @return Usuario
+     * @return Aluno
      */
-    public static Aluno loginUsuario(String email, String senha) {
+    public static Aluno loginAluno(String email, String senha) {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
         ResultSet result = null;
 
         try {
 
-            // Remove o usuário da tabela Usuario
-            String query = "SELECT cpf From usuario where email = ? AND senha = ?";
+            // Remove o Aluno da tabela Aluno
+            String query = "SELECT cpf From Aluno where email = ? AND senha = ?";
             state = connection.prepareStatement(query);
             state.setString(1, email);
             state.setString(2, senha);
             result = state.executeQuery();
 
             if (result.next()) {
-                return buscaUsuario(result.getString(1));
+                return buscaAluno(result.getString(1));
             }
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if(result != null){
+                    result.close();
+                }
+                if (state != null) {
+                    state.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
         return null;
     }
 
-    /**
-     * Método editarUsuario: Edita o usuário no banco de dados. Obs.: Deve receber
-     * nulo todos os valores que NÃO serão
-     * editados. Não faz tratamento de dados, deve receber dados já
-     * formatriculaados.
-     * 
-     * @param nome
-     * @param senha
-     * @param email
-     * @param telefone
-     */
-    public void editarUsuario(String nome, String senha, String email, int idade, String telefone, boolean bibliotecario) {
+    // Mexi em editar Aluno pq tava feio demais
+
+    public void editarAluno(String campo, String valor) {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
 
-        // Primeiro checa se algum desses dados foi recebido e aplica valores aos que
-        // forem null.
-        setNome(nome != null ? nome : getNome());
-        setSenha(senha != null ? senha : getSenha());
-        setEmail(email != null ? email : getEmail());
-        setIdade(idade != -1 ? idade : getIdade());
-        setTelefone(telefone != null ? telefone : getTelefone());
+        try{
+            String query = "UPDATE Aluno SET "+ campo +" = ? WHERE cpf = ?";
+            state = connection.prepareStatement(query);
+            state.setString(1, valor);
+            state.setString(2, getCpf());
+            state.executeUpdate();
+            state.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (state != null) {
+                    state.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public void editarAluno(String campo, int valor) {
+        Connection connection = PostgreSQLConnection.getInstance().getConnection();
+        PreparedStatement state = null;
 
         try {
 
-            // Atualiza nome, senha e email na tabela usuario na posição do cpf usado.
-            String query = "UPDATE Usuario SET nome = ?, senha = ?, email = ?, idade = ?, telefone = ?, bibliotecario = ? WHERE cpf = ?";
+            String query = "UPDATE Aluno SET "+ campo +" = ? WHERE cpf = ?";
             state = connection.prepareStatement(query);
-            state.setString(1, this.nome);
-            state.setString(2, this.senha);
-            state.setString(3, this.email);
-            state.setInt(4, this.idade);
-            state.setString(5, this.telefone);
-            state.setBoolean(6, bibliotecario);
-            state.setString(7, this.cpf);
+            state.setInt(1, valor);
+            state.setString(2, getCpf());
             state.executeUpdate();
             state.close();
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (state != null) {
+                    state.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public void editarAluno(String campo, boolean valor) {
+        Connection connection = PostgreSQLConnection.getInstance().getConnection();
+        PreparedStatement state = null;
+        
+        try {
+            String query = "UPDATE Aluno SET "+ campo +" = ? WHERE cpf = ?";
+            state = connection.prepareStatement(query);
+            state.setBoolean(1, valor);
+            state.setString(2, getCpf());
+            state.executeUpdate();
+            state.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (state != null) {
+                    state.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     /**
-     * Método listaUsuario: Método que acessa o banco de dados e retorna um
-     * ArrayList de Usuario.
+     * Método listaAluno: Método que acessa o banco de dados e retorna um
+     * ArrayList de Aluno.
      * 
-     * @return ArrayList<Usuario>
+     * @return ArrayList<Aluno>
      */
-    public static ArrayList<Aluno> listaUsuario() {
+    public static ArrayList<Aluno> listaAluno() {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
         ResultSet result;
 
-        // ArrayList do tipo Usuario, que será retornado com todos os usuarios do banco.
-        ArrayList<Aluno> usuarios = new ArrayList<Aluno>();
+        // ArrayList do tipo Aluno, que será retornado com todos os Alunos do banco.
+        ArrayList<Aluno> Alunos = new ArrayList<Aluno>();
 
         try {
 
-            // Seleciona todos os usuarios.
-            String query = "SELECT * From Usuario";
+            // Seleciona todos os Alunos.
+            String query = "SELECT * From Aluno";
             state = connection.prepareStatement(query);
             result = state.executeQuery();
 
@@ -240,11 +303,11 @@ public class Aluno {
                 result.getInt(5),
                 result.getString(6),
                 result.getString(7));
-                usuarios.add(user);
+                Alunos.add(user);
             }
 
             state.close();
-            return usuarios;
+            return Alunos;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -259,7 +322,7 @@ public class Aluno {
         try {
 
             // O atributo status ficaria com algo em que diria que o empréstimo está pendente
-            String query = "INSERT Into usuario (id_usuario, id_livro, datainicial, status) VALUES (?, ?, ?, ?)";
+            String query = "INSERT Into Aluno (id_Aluno, id_livro, datainicial, status) VALUES (?, ?, ?, ?)";
             state = connection.prepareStatement(query);
             state.setInt(1, this.matricula);
             state.setInt(2, livro);
