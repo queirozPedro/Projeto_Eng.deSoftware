@@ -5,17 +5,19 @@ import java.sql.SQLException;
 public class Bibliotecario extends Aluno {
 
     // Construtor da classe Bibliotecario que chama o construtor da classe Aluno
-    public Bibliotecario(int matricula, String nome, String cpf, String email, int idade, String senha, String telefone) {
+    public Bibliotecario(int matricula, String nome, String cpf, String email, int idade, String senha,
+            String telefone) {
         super(matricula, nome, cpf, email, idade, senha, telefone);
     }
 
-    // Método para inserir um novo aluno no sistema, chamando o método cadastrarAluno() do objeto Aluno passado como parâmetro
+    // Método para inserir um novo aluno no sistema, chamando o método
+    // cadastrarAluno() do objeto Aluno passado como parâmetro
     public void inserirAluno(Aluno aluno) {
         aluno.cadastrarAluno();
     }
 
-
-    // Método para buscar um aluno com base na matrícula fornecida, imprimindo suas informações se encontrado
+    // Método para buscar um aluno com base na matrícula fornecida, imprimindo suas
+    // informações se encontrado
     public void buscarAluno(int idAluno) {
         Aluno aluno = buscaAlunoPorMatricula(idAluno);
         if (aluno != null) {
@@ -27,17 +29,19 @@ public class Bibliotecario extends Aluno {
 
     // Deixei comentado, pq tava dando conflito com Aluno
     // public void editarAluno(int idAluno, Aluno aluno) {
-    //     Aluno alunoExistente = buscaAlunoPorMatricula(idAluno);
-    //     if (alunoExistente != null) {
-    //         alunoExistente.editarAluno(aluno.getNome(), aluno.getSenha(), aluno.getEmail(), aluno.getIdade(),
-    //                 aluno.getTelefone(), false);
-    //         System.out.println("Aluno editado com sucesso!");
-    //     } else {
-    //         System.out.println("Aluno não encontrado");
-    //     }
+    // Aluno alunoExistente = buscaAlunoPorMatricula(idAluno);
+    // if (alunoExistente != null) {
+    // alunoExistente.editarAluno(aluno.getNome(), aluno.getSenha(),
+    // aluno.getEmail(), aluno.getIdade(),
+    // aluno.getTelefone(), false);
+    // System.out.println("Aluno editado com sucesso!");
+    // } else {
+    // System.out.println("Aluno não encontrado");
+    // }
     // }
 
-    // Método para remover um aluno com base na matrícula, chamando o método excluirAluno() com o CPF do aluno
+    // Método para remover um aluno com base na matrícula, chamando o método
+    // excluirAluno() com o CPF do aluno
     public void removerAluno(int idAluno) {
         Aluno alunoExistente = buscaAlunoPorMatricula(idAluno);
         if (alunoExistente != null) {
@@ -110,7 +114,8 @@ public class Bibliotecario extends Aluno {
         return "Bibliotecario []";
     }
 
-    // Método privado que executa uma consulta SQL para buscar um aluno por matrícula no banco de dados
+    // Método privado que executa uma consulta SQL para buscar um aluno por
+    // matrícula no banco de dados
     private Aluno buscaAlunoPorMatricula(int matricula) {
         PreparedStatement state = null;
         ResultSet result = null;
@@ -121,7 +126,8 @@ public class Bibliotecario extends Aluno {
             state.setInt(1, matricula);
             result = state.executeQuery();
 
-            // Se o resultado for encontrado, cria e retorna um novo objeto Aluno com os detalhes encontrados
+            // Se o resultado for encontrado, cria e retorna um novo objeto Aluno com os
+            // detalhes encontrados
             if (result.next()) {
                 return new Aluno(result.getInt(1), result.getString(2), result.getString(3), result.getString(4),
                         result.getInt(5), result.getString(6), result.getString(7));
