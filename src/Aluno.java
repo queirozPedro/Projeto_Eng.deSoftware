@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class Aluno {
@@ -33,7 +34,7 @@ public class Aluno {
             try {
 
                 // Insere o Aluno na tabela Aluno
-                String query = "INSERT Into Aluno (nome, cpf, email, idade, senha, telefone, bibliotecario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                String query = "INSERT Into usuario (nome, cpf, email, idade, senha, telefone, bibliotecario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 state = connection.prepareStatement(query);
                 state.setString(1, nome);
                 state.setString(2, cpf);
@@ -79,7 +80,7 @@ public class Aluno {
         try {
 
             // Remove o Aluno da tabela Aluno
-            String query = "DELETE From Aluno where cpf = ?";
+            String query = "DELETE From usuario where cpf = ?";
             state = connection.prepareStatement(query);
             state.setString(1, cpf);
             state.executeUpdate();
@@ -117,8 +118,8 @@ public class Aluno {
 
         try {
 
-            // Seleciona tudo (*) na tabela Aluno onde o cpf foi o igual ao recebido
-            String query = "SELECT * From Aluno where cpf = ?";
+            // Seleciona tudo (*) na tabela usuario onde o cpf foi o igual ao recebido
+            String query = "SELECT * From usuario where cpf = ?";
             state = connection.prepareStatement(query);
             state.setString(1, cpf);
             result = state.executeQuery();
@@ -165,8 +166,7 @@ public class Aluno {
 
         try {
 
-            // Remove o Aluno da tabela Aluno
-            String query = "SELECT cpf From Aluno where email = ? AND senha = ?";
+            String query = "SELECT cpf From usuario where email = ? AND senha = ?";
             state = connection.prepareStatement(query);
             state.setString(1, email);
             state.setString(2, senha);
@@ -207,7 +207,7 @@ public class Aluno {
         PreparedStatement state = null;
 
         try{
-            String query = "UPDATE Aluno SET "+ campo +" = ? WHERE cpf = ?";
+            String query = "UPDATE usuario SET "+ campo +" = ? WHERE cpf = ?";
             state = connection.prepareStatement(query);
             state.setString(1, valor);
             state.setString(2, getCpf());
@@ -240,7 +240,7 @@ public class Aluno {
 
         try {
 
-            String query = "UPDATE Aluno SET "+ campo +" = ? WHERE cpf = ?";
+            String query = "UPDATE usuario SET "+ campo +" = ? WHERE cpf = ?";
             state = connection.prepareStatement(query);
             state.setInt(1, valor);
             state.setString(2, getCpf());
@@ -274,7 +274,7 @@ public class Aluno {
         PreparedStatement state = null;
         
         try {
-            String query = "UPDATE Aluno SET "+ campo +" = ? WHERE cpf = ?";
+            String query = "UPDATE usuario SET "+ campo +" = ? WHERE cpf = ?";
             state = connection.prepareStatement(query);
             state.setBoolean(1, valor);
             state.setString(2, getCpf());
@@ -310,8 +310,9 @@ public class Aluno {
         try {
 
             // Seleciona todos os Alunos.
-            String query = "SELECT * From Aluno";
+            String query = "SELECT * From usuario WHERE bibliotecario = ?";
             state = connection.prepareStatement(query);
+            state.setBoolean(1, false);
             result = state.executeQuery();
 
             while (result.next()) {
@@ -356,7 +357,7 @@ public class Aluno {
         try {
 
             // O atributo status ficaria com algo em que diria que o empréstimo está pendente
-            String query = "INSERT Into emprestimo (id_Aluno, id_livro, datainicial, status) VALUES (?, ?, ?, ?)";
+            String query = "INSERT Into emprestimo (id_usuario, id_livro, datainicial, status) VALUES (?, ?, ?, ?)";
             state = connection.prepareStatement(query);
             state.setInt(1, this.matricula);
             state.setInt(2, livro);
@@ -379,7 +380,6 @@ public class Aluno {
      * por um bibliotecário.
      * 
      * @param livro
-     * @param data
      * 
      * @return boolean
      */
@@ -389,12 +389,42 @@ public class Aluno {
 
         try {
 
-            // O atributo status ficaria com algo em que diria que o empréstimo está com a renovação pendente
-            String query = "UPDATE emprestimo SET status = ? WHERE id_cliente = ? AND  id_livro = ?";
+            String query = "UPDATE emprestimo SET status = ? WHERE id_usuario = ? AND  id_livro = ?";
             state = connection.prepareStatement(query);
             state.setString(1, "");
             state.setInt(2, this.matricula);
             state.setInt(3, livro);
+            state.executeUpdate();
+
+            return true;
+            
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Método devolverLivro: Método que o Aluno irá devolver um dos livros que ele
+     * pegou emprestado.
+     * Esse método irá atualizar uma tupla na tabela empréstimo com o status "devolvido"
+     * que representará que esse livro foi devolvido.
+     * 
+     * @param livro
+     * 
+     * @return boolean
+     */
+    public boolean devolverLivro(int livro){
+        Connection connection = PostgreSQLConnection.getInstance().getConnection();
+        PreparedStatement state = null;
+
+        try {
+
+            String query = "UPDATE emprestimo SET status = ?, datadevolucao = ? WHERE id_usuario = ? AND  id_livro = ?";
+            state = connection.prepareStatement(query);
+            state.setString(1, "devolvido");
+            state.setDate(2, Date.valueOf(LocalDate.now()));
+            state.setInt(3, this.matricula);
+            state.setInt(4, livro);
             state.executeUpdate();
 
             return true;
