@@ -24,9 +24,6 @@ public class Aluno {
     /**
      * Método cadastrar: Responsável por criar uma nova conta de Aluno no banco
      * de dados sistema.
-     * Obs.: Recebe uma instancia da Classe Aluno com dados já formatriculaados
-     * corretamente,a falta
-     * dessa formatriculaação pode causar erros.
      */
     public void cadastrarAluno() {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
@@ -196,8 +193,15 @@ public class Aluno {
         return null;
     }
 
-    // Mexi em editar Aluno pq tava feio demais
-
+    /**
+     * Método editarAluno: Método responsável por editar os atributos: nome,
+     * senha, email ou telefone de um Aluno 
+     * Obs.: O Método não trata dados, portanto os dados
+     * devem ser recebidos no formatriculao correto.
+     * 
+     * @param campo
+     * @param valor
+     */
     public void editarAluno(String campo, String valor) {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
@@ -222,6 +226,14 @@ public class Aluno {
         }
     }
     
+    /**
+     * Método editarAluno: Método responsável por editar os atributos: idade.
+     * Obs.: O Método não trata dados, portanto os dados
+     * devem ser recebidos no formatriculao correto.
+     * 
+     * @param campo
+     * @param valor
+     */
     public void editarAluno(String campo, int valor) {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
@@ -247,6 +259,16 @@ public class Aluno {
             }
         }
     }
+
+    /**
+     * Método editarAluno: Método responsável por editar os atributos: bibliotecário.
+     * No qual pode ser utilizado para tornar um aluno um bibliotecário. 
+     * Obs.: O Método não trata dados, portanto os dados
+     * devem ser recebidos no formatriculao correto.
+     * 
+     * @param campo
+     * @param valor
+     */
     public void editarAluno(String campo, boolean valor) {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
@@ -315,6 +337,18 @@ public class Aluno {
         return null;
     }
 
+    /**
+     * Método solicitarEmprestimo: Método que o Aluno irá solicitar o empréstimo 
+     * de um livro.
+     * Esse método irá criar uma tupla na tabela empréstimo com o status ""
+     * que representará que esse empréstimo está aguardando ser confirmado
+     * por um bibliotecário.
+     * 
+     * @param livro
+     * @param data
+     * 
+     * @return boolean
+     */
     public boolean solicitarEmprestimo(int livro, Date data){
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
@@ -322,7 +356,7 @@ public class Aluno {
         try {
 
             // O atributo status ficaria com algo em que diria que o empréstimo está pendente
-            String query = "INSERT Into Aluno (id_Aluno, id_livro, datainicial, status) VALUES (?, ?, ?, ?)";
+            String query = "INSERT Into emprestimo (id_Aluno, id_livro, datainicial, status) VALUES (?, ?, ?, ?)";
             state = connection.prepareStatement(query);
             state.setInt(1, this.matricula);
             state.setInt(2, livro);
@@ -337,6 +371,18 @@ public class Aluno {
         }
     }
 
+    /**
+     * Método renovarEmprestimo: Método que o Aluno irá solicitar a renovação
+     * de um empréstimo de um livro.
+     * Esse método irá atualizar uma tupla na tabela empréstimo com o status ""
+     * que representará que essa solicitação está aguardando ser confirmado
+     * por um bibliotecário.
+     * 
+     * @param livro
+     * @param data
+     * 
+     * @return boolean
+     */
     public boolean renovarEmprestimo(int livro){
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
