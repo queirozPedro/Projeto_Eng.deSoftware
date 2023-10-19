@@ -1,6 +1,3 @@
--- Table: public.emprestimo
-
--- DROP TABLE IF EXISTS public.emprestimo;
 -- Table: public.usuario
 
 -- DROP TABLE IF EXISTS public.usuario;
@@ -13,15 +10,14 @@ CREATE TABLE IF NOT EXISTS public.usuario
     email character varying(100) COLLATE pg_catalog."default" NOT NULL,
     idade integer NOT NULL,
     senha character varying(50) COLLATE pg_catalog."default" NOT NULL,
-    telefone character(11) COLLATE pg_catalog."default" DEFAULT NULL::bpchar,
+    telefone character(11) COLLATE pg_catalog."default" DEFAULT 'NULL::bpchar',
     bibliotecario boolean NOT NULL,
     CONSTRAINT aluno_pkey PRIMARY KEY (matricula)
 )
-
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.usuario
-    OWNER to postgres;
+    OWNER to qaokqcmt;
 
 
 -- Table: public.livro
@@ -30,19 +26,18 @@ ALTER TABLE IF EXISTS public.usuario
 
 CREATE TABLE IF NOT EXISTS public.livro
 (
-    id_livro integer NOT NULL DEFAULT nextval('livro_id_livro_seq'::regclass),
+    id_livro integer NOT NULL DEFAULT 'nextval('livro_id_livro_seq'::regclass)',
     titulo character varying(100) COLLATE pg_catalog."default" NOT NULL,
     editora character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    numpaginas integer NOT NULL,
+    autor character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    n_paginas integer NOT NULL,
     quantidade integer NOT NULL,
     CONSTRAINT livro_pkey PRIMARY KEY (id_livro)
 )
-
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.livro
-    OWNER to postgres;
-
+    OWNER to qaokqcmt;
 
 -- Table: public.emprestimo
 
@@ -55,6 +50,7 @@ CREATE TABLE IF NOT EXISTS public.emprestimo
     datainicial date NOT NULL,
     datafinal date NOT NULL,
     datadevolucao date,
+    status character varying(20) COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT emprestimo_pkey PRIMARY KEY (id_usuario, id_livro),
     CONSTRAINT emprestimo_id_livro_fkey FOREIGN KEY (id_livro)
         REFERENCES public.livro (id_livro) MATCH SIMPLE
@@ -69,8 +65,7 @@ CREATE TABLE IF NOT EXISTS public.emprestimo
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.emprestimo
-    OWNER to postgres;
-
+    OWNER to qaokqcmt;
 
 -- Table: public.penalidade
 
@@ -91,4 +86,4 @@ CREATE TABLE IF NOT EXISTS public.penalidade
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.penalidade
-    OWNER to postgres;
+    OWNER to qaokqcmt;
