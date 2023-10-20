@@ -89,7 +89,7 @@ public class Livro {
                     String titulo = rs.getString("titulo");
                     String autor = rs.getString("autor");
                     String editora = rs.getString("editora");
-                    int numPaginas = rs.getInt("n_paginas");
+                    int numPaginas = rs.getInt("npaginas");
                     int quantidade = rs.getInt("quantidade");
 
                     Livro livro = new Livro(titulo, editora, autor, numPaginas, quantidade);
@@ -143,7 +143,7 @@ public class Livro {
                     
                     String autor = rs.getString("autor");
                     String editora = rs.getString("editora");
-                    int numPaginas = rs.getInt("n_paginas");
+                    int numPaginas = rs.getInt("npaginas");
                     int quantidade = rs.getInt("quantidade");
                     int id = rs.getInt("id_livro");
 
@@ -258,7 +258,7 @@ public class Livro {
                     String titulo = rs.getString("titulo");
                     String autor = rs.getString("autor");
                     String editora = rs.getString("editora");
-                    int numPaginas = rs.getInt("n_paginas");
+                    int numPaginas = rs.getInt("npaginas");
                     int quantidade = rs.getInt("quantidade");
                     int id = rs.getInt("id_livro");
 
