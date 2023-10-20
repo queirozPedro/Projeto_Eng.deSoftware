@@ -26,7 +26,7 @@ public class Livro {
         
             try {
 
-                String query = "INSERT INTO livro (titulo, editora, autor, n_paginas, quantidade ) VALUES (?,?,?,?,?)";
+                String query = "INSERT INTO livro (titulo, editora, autor, npaginas, quantidade ) VALUES (?,?,?,?,?)";
                  pst = connection.prepareStatement(query);
 
                  pst.setString(1, getTitulo());
