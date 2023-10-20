@@ -1,6 +1,4 @@
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 
 public class Livro {
     String titulo;
@@ -23,11 +21,12 @@ public class Livro {
     public void cadastrar(){
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement pst = null;
+        int idLivro;
         
             try {
 
-                String query = "INSERT INTO livro (titulo, editora, autor, npaginas, quantidade ) VALUES (?,?,?,?,?)";
-                 pst = connection.prepareStatement(query);
+                String query = "INSERT INTO livro (titulo, editora, autor, n_paginas, quantidade ) VALUES (?,?,?,?,?)";
+                 pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 
                  pst.setString(1, getTitulo());
                  pst.setString(2, getEditora());
@@ -36,6 +35,13 @@ public class Livro {
                  pst.setInt(5, getQuantidade());
 
                  int validacaoCadastro = pst.executeUpdate();
+
+                 ResultSet keyLivro = pst.getGeneratedKeys();
+                if (keyLivro.next()) {
+                    
+                    idLivro = keyLivro.getInt(1);
+                    setId(idLivro);
+                }
 
                  if(validacaoCadastro > 0){
      
@@ -89,7 +95,7 @@ public class Livro {
                     String titulo = rs.getString("titulo");
                     String autor = rs.getString("autor");
                     String editora = rs.getString("editora");
-                    int numPaginas = rs.getInt("npaginas");
+                    int numPaginas = rs.getInt("n_paginas");
                     int quantidade = rs.getInt("quantidade");
 
                     Livro livro = new Livro(titulo, editora, autor, numPaginas, quantidade);
@@ -143,7 +149,7 @@ public class Livro {
                     
                     String autor = rs.getString("autor");
                     String editora = rs.getString("editora");
-                    int numPaginas = rs.getInt("npaginas");
+                    int numPaginas = rs.getInt("n_paginas");
                     int quantidade = rs.getInt("quantidade");
                     int id = rs.getInt("id_livro");
 
@@ -258,7 +264,7 @@ public class Livro {
                     String titulo = rs.getString("titulo");
                     String autor = rs.getString("autor");
                     String editora = rs.getString("editora");
-                    int numPaginas = rs.getInt("npaginas");
+                    int numPaginas = rs.getInt("n_paginas");
                     int quantidade = rs.getInt("quantidade");
                     int id = rs.getInt("id_livro");
 
