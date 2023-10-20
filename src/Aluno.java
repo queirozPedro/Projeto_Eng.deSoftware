@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Aluno {
 
@@ -43,9 +44,11 @@ public class Aluno {
         if (buscaAluno(getCpf()) == null) {
             try {
 
+                int idAluno;
+
                 // Insere o Aluno na tabela Aluno
                 String query = "INSERT Into usuario (nome, cpf, email, idade, senha, telefone, bibliotecario) VALUES (?, ?, ?, ?, ?, ?, ?)";
-                state = connection.prepareStatement(query);
+                state = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
                 state.setString(1, nome);
                 state.setString(2, cpf);
                 state.setString(3, email);
@@ -54,6 +57,16 @@ public class Aluno {
                 state.setString(6, telefone);
                 state.setBoolean(7, false);
                 state.executeUpdate();
+                
+
+                ResultSet keyAluno = state.getGeneratedKeys();
+                if (keyAluno.next()) {
+                    
+                    idAluno = keyAluno.getInt(1);
+                    setMatricula(idAluno);
+                } else{
+                    return false;
+                }
 
                 System.out.println(" Aluno Cadastrado!");
                 return true;
@@ -85,7 +98,7 @@ public class Aluno {
      * 
      * @param cpf
      */
-    public static void excluirAluno(String cpf) {
+    public static boolean excluirAluno(String cpf) {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
 
@@ -99,6 +112,7 @@ public class Aluno {
             state.close();
 
             System.out.println(" Aluno Excluido!");
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -110,6 +124,7 @@ public class Aluno {
                 e.printStackTrace();
             }
         }
+        return false;
     }
 
     /**
@@ -128,6 +143,7 @@ public class Aluno {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
         ResultSet result = null;
+        Aluno aluno = null;
 
         try {
 
@@ -139,9 +155,21 @@ public class Aluno {
 
             // Retorna o Aluno
             if (result.next()) {
-                return null;
+                int matricula = result.getInt(1);
+                String nome = result.getString(2);
+                String email = result.getString(4);
+                int idade = result.getInt(5);
+                String senha = result.getString(6);
+                String telefone = result.getString(7);
+
+                aluno = new Aluno(matricula, nome, cpf, email, idade, senha, telefone);
+                return aluno;
             }
+
             state.close();
+
+            return aluno;
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -157,7 +185,7 @@ public class Aluno {
                 throw e;
             }
         }
-        return null;
+        return aluno;
     }
 
     /**
@@ -507,6 +535,31 @@ public class Aluno {
     public String toString() {
         return "Aluno [matricula=" + matricula + ", cpf=" + cpf + ", nome=" + nome + ", senha=" + senha + ", email="
                 + email + ", telefone=" + telefone + ", idade=" + idade + "]";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Aluno other = (Aluno) obj;
+
+        return matricula == other.matricula &&
+                idade == other.idade &&
+                Objects.equals(cpf, other.cpf) &&
+                Objects.equals(nome, other.nome) &&
+                Objects.equals(senha, other.senha) &&
+                Objects.equals(email, other.email) &&
+                Objects.equals(telefone, other.telefone);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(matricula, cpf, nome, senha, email, telefone, idade);
     }
 
 }
