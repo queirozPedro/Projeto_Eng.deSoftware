@@ -390,8 +390,9 @@ public class Aluno {
      * @param data
      * 
      * @return boolean
+     * @throws Exception
      */
-    public boolean solicitarEmprestimo(int livro, LocalDate data){
+    public boolean solicitarEmprestimo(int livro, LocalDate data) throws Exception{
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
 
@@ -409,7 +410,7 @@ public class Aluno {
             return true;
             
         } catch (Exception e) {
-            return false;
+            throw e;
         }
     }
 
