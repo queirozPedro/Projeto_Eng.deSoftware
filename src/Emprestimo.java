@@ -25,7 +25,7 @@ public class Emprestimo {
 
         try {
             // Insere o empréstimo na tabela Emprestimo
-            String query = "INSERT INTO emprestimo (id_aluno, id_livro, data_inicial, data_final) VALUES (?, ?, ?, ?)";
+            String query = "INSERT INTO emprestimo (matricula, id_livro, data_inicial, data_final) VALUES (?, ?, ?, ?)";
             state = connection.prepareStatement(query);
             state.setInt(1, aluno.getMatricula());
             state.setInt(2, idLivro);
@@ -48,7 +48,7 @@ public class Emprestimo {
 
         try {
             // Atualiza a data_final do empréstimo para uma nova data
-            String query = "UPDATE emprestimo SET data_final = ? WHERE id_aluno = ? AND id_livro = ? AND data_final = ?";
+            String query = "UPDATE emprestimo SET data_final = ? WHERE matricula = ? AND id_livro = ? AND data_final = ?";
             state = connection.prepareStatement(query);
             state.setDate(1, new java.sql.Date(dataFinal.getTime())); // Nova data final
             state.setInt(2, aluno.getMatricula());
