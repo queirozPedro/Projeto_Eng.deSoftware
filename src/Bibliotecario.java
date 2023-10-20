@@ -12,7 +12,7 @@ public class Bibliotecario extends Aluno {
 
     // Método para inserir um novo aluno no sistema, chamando o método
     // cadastrarAluno() do objeto Aluno passado como parâmetro
-    public void inserirAluno(Aluno aluno) {
+    public void inserirAluno(Aluno aluno) throws SQLException {
         aluno.cadastrarAluno();
     }
 
@@ -121,7 +121,7 @@ public class Bibliotecario extends Aluno {
         ResultSet result = null;
         try {
             // Consulta SQL para buscar o aluno por matrícula
-            String query = "SELECT * From Aluno where matricula = ?";
+            String query = "SELECT * From usuario where matricula = ?";
             state = PostgreSQLConnection.getInstance().getConnection().prepareStatement(query);
             state.setInt(1, matricula);
             result = state.executeQuery();
