@@ -1,9 +1,10 @@
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class MainProjeto {
 
-    public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(String[] args) throws InterruptedException, IOException, SQLException {
         Scanner sc = new Scanner(System.in);
         boolean sair = false;
         while (!sair) {
@@ -57,14 +58,15 @@ public class MainProjeto {
                         String email = sc.nextLine();
                         System.out.print("Senha: ");
                         String senha = sc.nextLine();
-                        Aluno aluno = Aluno.loginAluno(email, senha);
-                        if (aluno != null) {
-                            //Bibliotecario Bibliotecario = Bibliotecario.loginBibliotecario(email, senha);
-                            // if (bibliotecario != null) {
-                            //     menuBibliotecarioin(bibliotecario, sc);
-                            // } else {
-                            //     menuAluno(aluno, sc);
+                        if (Aluno.loginAluno(email, senha) != null) {
+
+                            // if(Bibliotecario.loginBibliotecario(email, senha) != null){
+                            //     tela bibliotecario
                             // }
+                            // else{
+                            //     tela alluno
+                            // }
+
                         } else {
                             LimpaTela();
                             System.out.println(" Email ou Senha incorretos! ");
@@ -87,7 +89,7 @@ public class MainProjeto {
         }
     }
 
-    public static void MenuCadastro(Scanner sc) throws InterruptedException, IOException {
+    public static void MenuCadastro(Scanner sc) throws InterruptedException, IOException, SQLException {
         try {
             LimpaTela();
             System.out.println(" ===  Tela de Cadastro  ===");
@@ -97,62 +99,69 @@ public class MainProjeto {
 
             switch (Integer.valueOf(sc.nextLine())) {
                 case 1:
-                    boolean sair = false;
-                    String nome = null, cpf = null, email = null, senha = null, senhaConfirma = null, telefone = null;
-
-                    do {
                         LimpaTela();
-                        System.out.println(" < Cadastro >");
-                        if (!validarNome(nome)) {
-                            System.out.print(" Nome: ");
-                            nome = sc.nextLine();
-                        } else {
-                            System.out.println(" Nome: " + nome);
-                            if (!validarCpf(cpf)) {
-                                System.out.print(" Cpf (11 digitos): ");
-                                cpf = sc.nextLine();
-                            } else {
-                                System.out.println(" Cpf: " + cpf);
-                                if (!validarEmail(email)) {
-                                    System.out.print(" Email: ");
-                                    email = sc.nextLine();
-                                } else {
-                                    System.out.println(" Email: " + email);
-                                    if (!validarSenha(senha)) {
-                                        System.out.print(" Senha (minimo de 6 digitos): ");
-                                        senha = sc.nextLine();
-                                        System.out.print(" Confirme a Senha: ");
-                                        senhaConfirma = sc.nextLine();
-                                        if (!senha.equals(senhaConfirma)) {
-                                            senha = null;
-                                        }
-                                    } else {
-                                        System.out.println(" Senha: " + senha);
-                                        if (!validarTelefone(telefone)) {
-                                            System.out.print(" Telefone (11 digitos)): ");
-                                            telefone = sc.nextLine();
-                                        } else {
-                                            System.out.println(" Telefone: " + telefone);
-                                            System.out.print(" Cadastrar Conta (1 -> Sim, 2 - > Não): ");
-                                            if (Integer.valueOf(sc.nextLine()) == 1) {
-                                                //Aluno aluno = new Aluno();
-                                                //aluno.cadastrarAluno();
-                                            }
-                                            System.out.print(" Aperte Enter para Continuar! ");
-                                            sc.nextLine();
-                                            sair = true;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } while (!sair);
-                    break;
+                        System.out.println(" < Cadastro de Aluno >");
+                        System.out.print(" Nome: ");
+                        String nome = sc.nextLine();
+                        System.out.print(" Cpf: ");
+                        String cpf = sc.nextLine();
+                        System.out.print(" Email: ");
+                        String email = sc.nextLine();
+                        System.out.print(" Senha: ");
+                        String senha = sc.nextLine();
+                        System.out.print(" Telefone: ");
+                        String telefone = sc.nextLine();
+                        System.out.print(" Idade: ");
+                        int idade = Integer.valueOf(sc.nextLine());
+                        
+                        Aluno aluno = new Aluno(nome, cpf, email, idade, senha, telefone);
+                        aluno.cadastrarAluno();
+                        System.out.print(" Aperte Enter para Continuar! ");
+                        sc.nextLine();
+                        
                 case 0:
                     return;
             }
         } catch (NumberFormatException e) {
         }
+    }
+
+
+    public static void menuALuno(Aluno aLuno, Scanner sc) throws InterruptedException, IOException {
+        boolean sair = false;
+        int idLivro;
+        do {
+            try {
+                LimpaTela();
+                System.out.println(" > Bem Vindo " + aLuno.getNome() + " (^O^) < ");
+                System.out.println(" 1 -> Exibir Perfil");
+                System.out.println(" 2 -> Pesquisar por Livros");
+                System.out.println(" 3 -> Pedir Emprestimo");
+                System.out.println(" 4 -> Meus Emprestimos");
+                System.out.println(" 0 -> Sair da Conta");
+                System.out.print(" > ");
+
+                switch (Integer.valueOf(sc.nextLine())) {
+                    case 1:
+                        //editarPerfil(sc, aluno);
+                        break;
+                    case 2: // buscarLivro
+                    
+                        break;
+                    case 3: // realizarEmprestimo
+                    
+                        break;
+                    case 4: // Meus Emprestimos
+                        
+                        break;
+                    case 0:
+                        sair = true;
+                        System.out.println(" Saindo da Conta");
+                        return;
+                }
+            } catch (NumberFormatException e) {
+            }
+        } while (!sair);
     }
 
     public static void LimpaTela() throws InterruptedException, IOException {
@@ -162,55 +171,6 @@ public class MainProjeto {
             new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
         } else {
             new ProcessBuilder("sh", "-c", "clear").inheritIO().start().waitFor();
-        }
-    }
-
-    public static boolean validarNome(String nome) {
-        if (nome == null || nome.trim().isEmpty()) {
-            return false;
-        }
-        if (!nome.matches("^[A-Za-zÀ-ÖØ-öø-ÿ\\s-0-9]+$")) {
-            return false;
-        }
-        return true;
-    }
-
-    public static boolean validarCpf(String cpf) {
-        if (cpf == null || cpf.trim().isEmpty()) {
-            return false;
-        }
-        if (!cpf.matches("\\d{11}")) {
-            return false;
-        }
-        return true;
-    }
-
-    public static boolean validarTelefone(String telefone) {
-        if (telefone == null || telefone.isEmpty()) {
-            return false;
-        }
-        if (!telefone.matches("\\d{11}")) {
-            return false;
-        }
-        return true;
-    }
-
-    public static boolean validarEmail(String email) {
-        if (email == null || email.trim().isEmpty()) {
-            return false;
-        }
-        if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            return false;
-        }
-        return true;
-
-    }
-
-    public static boolean validarSenha(String senha) {
-        if (senha == null || senha.trim().isEmpty() || senha.length() < 6) {
-            return false;
-        } else {
-            return true;
         }
     }
 
