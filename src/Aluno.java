@@ -35,12 +35,13 @@ public class Aluno {
     /**
      * Método cadastrar: Responsável por criar uma nova conta de Aluno no banco
      * de dados sistema.
+     * 
      * @throws SQLException
      */
     public boolean cadastrarAluno() throws SQLException {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
-        
+
         if (buscaAluno(getCpf()) == null) {
             try {
 
@@ -57,14 +58,13 @@ public class Aluno {
                 state.setString(6, telefone);
                 state.setBoolean(7, false);
                 state.executeUpdate();
-                
 
                 ResultSet keyAluno = state.getGeneratedKeys();
                 if (keyAluno.next()) {
-                    
+
                     idAluno = keyAluno.getInt(1);
                     setMatricula(idAluno);
-                } else{
+                } else {
                     return false;
                 }
 
@@ -155,14 +155,13 @@ public class Aluno {
 
             // Retorna o Aluno
             if (result.next()) {
-                int matricula = result.getInt(1);
-                String nome = result.getString(2);
-                String email = result.getString(4);
-                int idade = result.getInt(5);
-                String senha = result.getString(6);
-                String telefone = result.getString(7);
-
-                aluno = new Aluno(matricula, nome, cpf, email, idade, senha, telefone);
+                aluno = new Aluno(result.getInt(1),
+                        result.getString(2),
+                        cpf,
+                        result.getString(4),
+                        result.getInt(5),
+                        result.getString(6),
+                        result.getString(7));
                 return aluno;
             }
 
@@ -170,12 +169,11 @@ public class Aluno {
 
             return aluno;
 
-
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                if(result != null){
+                if (result != null) {
                     result.close();
                 }
                 if (state != null) {
@@ -220,7 +218,7 @@ public class Aluno {
             e.printStackTrace();
         } finally {
             try {
-                if(result != null){
+                if (result != null) {
                     result.close();
                 }
                 if (state != null) {
@@ -236,7 +234,7 @@ public class Aluno {
 
     /**
      * Método editarAluno: Método responsável por editar os atributos: nome,
-     * senha, email ou telefone de um Aluno 
+     * senha, email ou telefone de um Aluno
      * Obs.: O Método não trata dados, portanto os dados
      * devem ser recebidos no formatriculao correto.
      * 
@@ -247,8 +245,8 @@ public class Aluno {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
 
-        try{
-            String query = "UPDATE usuario SET "+ campo +" = ? WHERE cpf = ?";
+        try {
+            String query = "UPDATE usuario SET " + campo + " = ? WHERE cpf = ?";
             state = connection.prepareStatement(query);
             state.setString(1, valor);
             state.setString(2, getCpf());
@@ -266,7 +264,7 @@ public class Aluno {
             }
         }
     }
-    
+
     /**
      * Método editarAluno: Método responsável por editar os atributos: idade.
      * Obs.: O Método não trata dados, portanto os dados
@@ -281,7 +279,7 @@ public class Aluno {
 
         try {
 
-            String query = "UPDATE usuario SET "+ campo +" = ? WHERE cpf = ?";
+            String query = "UPDATE usuario SET " + campo + " = ? WHERE cpf = ?";
             state = connection.prepareStatement(query);
             state.setInt(1, valor);
             state.setString(2, getCpf());
@@ -302,8 +300,9 @@ public class Aluno {
     }
 
     /**
-     * Método editarAluno: Método responsável por editar os atributos: bibliotecário.
-     * No qual pode ser utilizado para tornar um aluno um bibliotecário. 
+     * Método editarAluno: Método responsável por editar os atributos:
+     * bibliotecário.
+     * No qual pode ser utilizado para tornar um aluno um bibliotecário.
      * Obs.: O Método não trata dados, portanto os dados
      * devem ser recebidos no formatriculao correto.
      * 
@@ -313,9 +312,9 @@ public class Aluno {
     public void editarAluno(String campo, boolean valor) {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
-        
+
         try {
-            String query = "UPDATE usuario SET "+ campo +" = ? WHERE cpf = ?";
+            String query = "UPDATE usuario SET " + campo + " = ? WHERE cpf = ?";
             state = connection.prepareStatement(query);
             state.setBoolean(1, valor);
             state.setString(2, getCpf());
@@ -360,13 +359,13 @@ public class Aluno {
 
                 // Cria um objeto para cada um e coloca no ArrayList.
                 Aluno user = new Aluno(
-                result.getInt(1),
-                result.getString(2),
-                result.getString(3),
-                result.getString(4),
-                result.getInt(5),
-                result.getString(6),
-                result.getString(7));
+                        result.getInt(1),
+                        result.getString(2),
+                        result.getString(3),
+                        result.getString(4),
+                        result.getInt(5),
+                        result.getString(6),
+                        result.getString(7));
                 Alunos.add(user);
             }
 
@@ -380,7 +379,7 @@ public class Aluno {
     }
 
     /**
-     * Método solicitarEmprestimo: Método que o Aluno irá solicitar o empréstimo 
+     * Método solicitarEmprestimo: Método que o Aluno irá solicitar o empréstimo
      * de um livro.
      * Esse método irá criar uma tupla na tabela empréstimo com o status ""
      * que representará que esse empréstimo está aguardando ser confirmado
@@ -392,13 +391,14 @@ public class Aluno {
      * @return boolean
      * @throws Exception
      */
-    public boolean solicitarEmprestimo(int livro, LocalDate data) throws Exception{
+    public boolean solicitarEmprestimo(int livro, LocalDate data) throws Exception {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
 
         try {
 
-            // O atributo status ficaria com algo em que diria que o empréstimo está pendente
+            // O atributo status ficaria com algo em que diria que o empréstimo está
+            // pendente
             String query = "INSERT Into emprestimo (matricula, id_livro, data_inicial, status) VALUES (?, ?, ?, ?)";
             state = connection.prepareStatement(query);
             state.setInt(1, this.matricula);
@@ -408,7 +408,7 @@ public class Aluno {
             state.executeUpdate();
 
             return true;
-            
+
         } catch (Exception e) {
             throw e;
         }
@@ -425,7 +425,7 @@ public class Aluno {
      * 
      * @return boolean
      */
-    public boolean renovarEmprestimo(int livro){
+    public boolean renovarEmprestimo(int livro) {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
 
@@ -439,7 +439,7 @@ public class Aluno {
             state.executeUpdate();
 
             return true;
-            
+
         } catch (Exception e) {
             return false;
         }
@@ -448,14 +448,15 @@ public class Aluno {
     /**
      * Método devolverLivro: Método que o Aluno irá devolver um dos livros que ele
      * pegou emprestado.
-     * Esse método irá atualizar uma tupla na tabela empréstimo com o status "devolvido"
+     * Esse método irá atualizar uma tupla na tabela empréstimo com o status
+     * "devolvido"
      * que representará que esse livro foi devolvido.
      * 
      * @param livro
      * 
      * @return boolean
      */
-    public boolean devolverLivro(int livro){
+    public boolean devolverLivro(int livro) {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
 
@@ -470,7 +471,7 @@ public class Aluno {
             state.executeUpdate();
 
             return true;
-            
+
         } catch (Exception e) {
             return false;
         }
@@ -564,4 +565,3 @@ public class Aluno {
     }
 
 }
-
