@@ -391,7 +391,7 @@ public class Aluno {
      * 
      * @return boolean
      */
-    public boolean solicitarEmprestimo(int livro, Date data){
+    public boolean solicitarEmprestimo(int livro, LocalDate data){
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
 
@@ -402,8 +402,8 @@ public class Aluno {
             state = connection.prepareStatement(query);
             state.setInt(1, this.matricula);
             state.setInt(2, livro);
-            state.setDate(3, data);
-            state.setString(4, "");
+            state.setDate(3, Date.valueOf(data));
+            state.setString(4, "solicitando empréstimo");
             state.executeUpdate();
 
             return true;
@@ -432,7 +432,7 @@ public class Aluno {
 
             String query = "UPDATE emprestimo SET status = ? WHERE matricula = ? AND  id_livro = ?";
             state = connection.prepareStatement(query);
-            state.setString(1, "");
+            state.setString(1, "solicitando renovação");
             state.setInt(2, this.matricula);
             state.setInt(3, livro);
             state.executeUpdate();
