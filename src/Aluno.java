@@ -22,11 +22,21 @@ public class Aluno {
         this.idade = idade;
     }
 
+    public Aluno(String nome, String cpf, String email, int idade, String senha, String telefone) {
+        this.cpf = cpf;
+        this.nome = nome;
+        this.senha = senha;
+        this.email = email;
+        this.telefone = telefone;
+        this.idade = idade;
+    }
+
     /**
      * Método cadastrar: Responsável por criar uma nova conta de Aluno no banco
      * de dados sistema.
+     * @throws SQLException
      */
-    public void cadastrarAluno() {
+    public boolean cadastrarAluno() throws SQLException {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
         
@@ -34,7 +44,7 @@ public class Aluno {
             try {
 
                 // Insere o Aluno na tabela Aluno
-                String query = "INSERT Into usuario (nome, cpf, email, idade, senha, telefone, bibliotecario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                String query = "INSERT Into usuario (nome, cpf, email, idade, senha, telefone, bibliotecario) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 state = connection.prepareStatement(query);
                 state.setString(1, nome);
                 state.setString(2, cpf);
@@ -46,21 +56,23 @@ public class Aluno {
                 state.executeUpdate();
 
                 System.out.println(" Aluno Cadastrado!");
+                return true;
 
             } catch (Exception e) {
-                e.printStackTrace();
+                throw e;
             } finally {
                 try {
                     if (state != null) {
                         state.close();
                     }
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    throw e;
                 }
             }
 
         } else {
             System.out.println(" ERRO! Cpf já Cadastrado!");
+            return false;
         }
     }
 
@@ -110,8 +122,9 @@ public class Aluno {
      * 
      * @param cpf
      * @return Aluno
+     * @throws SQLException
      */
-    public static Aluno buscaAluno(String cpf) {
+    public static Aluno buscaAluno(String cpf) throws SQLException {
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement state = null;
         ResultSet result = null;
@@ -141,7 +154,7 @@ public class Aluno {
                     state.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw e;
             }
         }
         return null;
@@ -357,7 +370,7 @@ public class Aluno {
         try {
 
             // O atributo status ficaria com algo em que diria que o empréstimo está pendente
-            String query = "INSERT Into emprestimo (id_usuario, id_livro, datainicial, status) VALUES (?, ?, ?, ?)";
+            String query = "INSERT Into emprestimo (matricula, id_livro, data_inicial, status) VALUES (?, ?, ?, ?)";
             state = connection.prepareStatement(query);
             state.setInt(1, this.matricula);
             state.setInt(2, livro);
@@ -389,7 +402,7 @@ public class Aluno {
 
         try {
 
-            String query = "UPDATE emprestimo SET status = ? WHERE id_usuario = ? AND  id_livro = ?";
+            String query = "UPDATE emprestimo SET status = ? WHERE matricula = ? AND  id_livro = ?";
             state = connection.prepareStatement(query);
             state.setString(1, "");
             state.setInt(2, this.matricula);
@@ -419,7 +432,7 @@ public class Aluno {
 
         try {
 
-            String query = "UPDATE emprestimo SET status = ?, datadevolucao = ? WHERE id_usuario = ? AND  id_livro = ?";
+            String query = "UPDATE emprestimo SET status = ?, data_devolucao = ? WHERE matricula = ? AND  id_livro = ?";
             state = connection.prepareStatement(query);
             state.setString(1, "devolvido");
             state.setDate(2, Date.valueOf(LocalDate.now()));
@@ -497,3 +510,4 @@ public class Aluno {
     }
 
 }
+
