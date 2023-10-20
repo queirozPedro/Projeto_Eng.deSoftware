@@ -18,14 +18,14 @@ public class Livro {
     }
     
     //Método de cadastro do livro no banco de dados.
-    public void cadastrar(){
+    public void cadastrar() throws SQLException{
         Connection connection = PostgreSQLConnection.getInstance().getConnection();
         PreparedStatement pst = null;
         int idLivro;
         
             try {
 
-                String query = "INSERT INTO livro (titulo, editora, autor, n_paginas, quantidade ) VALUES (?,?,?,?,?)";
+                String query = "INSERT INTO livro (titulo, editora, autor, npaginas, quantidade ) VALUES (?,?,?,?,?)";
                  pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 
                  pst.setString(1, getTitulo());
@@ -55,10 +55,9 @@ public class Livro {
 
 
                 pst.close();
-                connection.close();
 
         } catch (java.sql.SQLException e) {
-            System.out.println("Erro: " + e.getMessage());
+            throw e;
         }
 
     }
@@ -103,7 +102,6 @@ public class Livro {
 
                     pstmt.close();
                     rs.close();
-                    connection.close();
 
                     return livro;
 
@@ -140,7 +138,6 @@ public class Livro {
             
             pstmt.close();
             rs.close();
-            connection.close();
 
                 return null;
 
@@ -202,7 +199,6 @@ public class Livro {
             }
 
             pstm.close();
-            connection.close();
 
         } catch (java.sql.SQLException e) {
             System.out.println("Erro: " + e.getMessage());
@@ -277,7 +273,6 @@ public class Livro {
             }
 
             pstm.close();
-            connection.close();
 
 
         } catch (java.sql.SQLException e) {
